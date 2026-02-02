@@ -16,26 +16,9 @@ local PATH_SEP = IS_WINDOWS and "\\" or "/"
 -- Use standard lua runtime
 local LUA_CMD = "lua"
 
--- Setup module path to find companion scripts
--- When installed via Rokit, scripts are in the package root, not in a bin/ subdirectory
-local function findModulePath()
-	-- Get the directory containing this script
-	local scriptPath = arg[0]
-	if not scriptPath then
-		return "./"
-	end
-
-	-- Extract directory from script path
-	local scriptDir = scriptPath:match("(.*)[/\\]") or "."
-
-	-- Rokit extracts the entire src/ folder, so modules are in the same dir
-	return scriptDir .. "/"
-end
-
-local modulePath = findModulePath()
-package.path = modulePath .. "?.lua;" .. package.path
-
--- Import companion modules (they should be in the same directory)
+-- Import companion modules
+-- When bundled with darklua, these will be embedded in this file
+-- When run unbundled, they need to be in the same directory
 local analyzeDeps = require("analyze-dependencies")
 local visualizeDeps = require("visualize-dependencies")
 

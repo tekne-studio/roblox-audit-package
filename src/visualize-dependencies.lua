@@ -1,5 +1,3 @@
-#!/usr/bin/env lua
-
 --[[
 ===========================================
 🎨 Dependency Visualizer - Tekne Style
@@ -427,76 +425,6 @@ local function visualize(srcDir, outputFile, format, detailedMode)
 end
 
 -- Export module functions
-local M = {
+return {
     visualize = visualize,
 }
-
--- Main execution (only if run as script, not when required)
-if not pcall(debug.getlocal, 4, 1) then
-    local srcDir = arg[1] or "src"
-    local outputFile = arg[2]
-    local format = arg[3] or "svg"
-    local detailedMode = arg[4] == "detailed" or arg[4] == "--detailed"
-
-    if arg[1] == "--help" or arg[1] == "-h" then
-        print([[
-Usage: ./visualize-dependencies [directory] [output] [format] [mode]
-
-Generates dependency graph visualizations for Roblox/Rojo projects.
-
-Arguments:
-  directory  Source directory to analyze (default: src)
-  output     Output file name (default: dependency-graph.<format>)
-  format     Output format: svg, png, pdf, dot (default: svg)
-  mode       "detailed" for detailed mode with full paths and edge labels
-
-Examples:
-  ./visualize-dependencies src
-  ./visualize-dependencies src graph.svg
-  ./visualize-dependencies src graph.png png
-  ./visualize-dependencies src graph-full.svg svg detailed
-
-Modes:
-  Normal (default):
-    - Grouped by module type (Services, Controllers, etc.)
-    - Simple module names
-    - Clean, high-level overview
-
-  Detailed:
-    - Flat layout (no grouping)
-    - Full file paths shown
-    - Edge labels showing require() paths
-    - Module category annotations
-
-Theme:
-  - High-tech neon aesthetic with deep black background
-  - JetBrains Mono font throughout (with monospace fallback)
-  - 80% transparent node backgrounds
-  - Vibrant neon-colored strokes/borders (2.5px thick)
-  - Subtle grey edges for connections
-
-Requires:
-  - Graphviz (brew install graphviz)
-
-Color coding (neon strokes):
-  - Cyan (#00D9FF): Framework modules
-  - Purple (#CC00FF): Bootstrap (init files)
-  - Green (#00FF88): Services
-  - Orange (#FF8800): Controllers
-  - Grey (#888888): Utilities
-  - Pink dashed (#FF0055): Orphan modules (no connections)
-]])
-        os.exit(0)
-    end
-
-    -- Run visualization
-    local success = visualize(srcDir, outputFile, format, detailedMode)
-
-    if success then
-        os.exit(0)
-    else
-        os.exit(1)
-    end
-end
-
-return M

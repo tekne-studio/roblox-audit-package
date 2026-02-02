@@ -1,12 +1,9 @@
-#!/usr/bin/env lua
-
 --[[
 ===========================================
-🔍 Roblox Dependency Analyzer
+🔍 Roblox Dependency Analyzer Module
 ===========================================
 Analyzes require() dependencies in Roblox/Rojo projects
 Detects circular dependencies
-Handles .client.lua and .server.lua files
 ===========================================
 ]]
 
@@ -280,43 +277,8 @@ local function printModuleTree(graph, module, indent, visited)
 end
 
 -- Export module functions
-local M = {
+return {
     analyzeDependencies = analyzeDependencies,
     buildDependencyGraph = buildDependencyGraph,
     findCycles = findCycles,
 }
-
--- Main execution (only if run as script, not when required)
-if not pcall(debug.getlocal, 4, 1) then
-    local srcDir = arg[1] or "src"
-
-    if arg[1] == "--help" or arg[1] == "-h" then
-        print([[
-Usage: ./analyze-dependencies [directory]
-
-Analyzes require() dependencies in Roblox/Rojo Luau projects.
-Detects circular dependencies.
-Handles .client.lua and .server.lua files.
-
-Examples:
-  ./analyze-dependencies src
-  ./analyze-dependencies src/shared/Modules
-
-Options:
-  -h, --help    Show this help message
-]])
-        os.exit(0)
-    end
-
-    -- Run analysis
-    local success, cycles = analyzeDependencies(srcDir)
-
-    -- Exit with appropriate code
-    if success then
-        os.exit(0)
-    else
-        os.exit(1)
-    end
-end
-
-return M
