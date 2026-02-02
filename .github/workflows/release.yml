@@ -81,21 +81,44 @@ jobs:
           # Get the previous tag
           PREVIOUS_TAG=$(git tag --sort=-v:refname | grep -v "v$VERSION" | head -1 || echo "")
 
+          # Get the latest commit with full description (subject + body)
+          LATEST_COMMIT=$(git log -1 --pretty=format:"%s%n%n%b" --no-merges)
+
           if [ -z "$PREVIOUS_TAG" ]; then
-            echo "No previous tag found, generating full changelog"
-            COMMITS=$(git log --pretty=format:"- %s" --no-merges)
+            echo "No previous tag found, showing latest commit"
+            {
+              echo 'CHANGELOG<<EOF'
+              echo "$LATEST_COMMIT"
+              echo 'EOF'
+            } >> $GITHUB_OUTPUT
           else
             echo "Generating changelog from $PREVIOUS_TAG to v$VERSION"
-            # Get all commits since last tag (dynamic - all commits for this version)
-            COMMITS=$(git log ${PREVIOUS_TAG}..HEAD --pretty=format:"- %s" --no-merges)
-          fi
+            # Count commits in range
+            COMMIT_COUNT=$(git log ${PREVIOUS_TAG}..HEAD --oneline --no-merges | wc -l)
 
-          # Save changelog to file (GitHub Actions multiline output)
-          {
-            echo 'CHANGELOG<<EOF'
-            echo "$COMMITS"
-            echo 'EOF'
-          } >> $GITHUB_OUTPUT
+            if [ "$COMMIT_COUNT" -eq 1 ]; then
+              # Only one commit - show full description
+              {
+                echo 'CHANGELOG<<EOF'
+                echo "$LATEST_COMMIT"
+                echo 'EOF'
+              } >> $GITHUB_OUTPUT
+            else
+              # Multiple commits - show latest with full description, others with just title
+              OTHER_COMMITS=$(git log ${PREVIOUS_TAG}..HEAD --skip=1 --pretty=format:"- %s" --no-merges)
+              {
+                echo 'CHANGELOG<<EOF'
+                echo "### Latest Changes"
+                echo ""
+                echo "$LATEST_COMMIT"
+                echo ""
+                echo "### Other Changes in This Release"
+                echo ""
+                echo "$OTHER_COMMITS"
+                echo 'EOF'
+              } >> $GITHUB_OUTPUT
+            fi
+          fi
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
