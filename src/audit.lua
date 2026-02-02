@@ -1,10 +1,10 @@
-#!/usr/bin/env luau
+#!/usr/bin/env lua
 
 --[[
 ===========================================
 🔍 Roblox/Rojo Luau Project Audit (v2.0)
 ===========================================
-Usage: luau audit.luau
+Usage: roblox-audit
 ===========================================
 ]]
 
