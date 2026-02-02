@@ -62,6 +62,27 @@ jobs:
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
           echo "Detected version: $VERSION"
 
+      - name: Generate changelog
+        id: changelog
+        run: |
+          # Get the previous tag
+          PREVIOUS_TAG=$(git tag --sort=-v:refname | grep -v "v$VERSION" | head -1 || echo "")
+
+          if [ -z "$PREVIOUS_TAG" ]; then
+            echo "No previous tag found, using all commits"
+            COMMITS=$(git log --pretty=format:"- %s" --no-merges)
+          else
+            echo "Generating changelog from $PREVIOUS_TAG to v$VERSION"
+            COMMITS=$(git log ${PREVIOUS_TAG}..HEAD --pretty=format:"- %s" --no-merges)
+          fi
+
+          # Save changelog to file (GitHub Actions multiline output)
+          {
+            echo 'CHANGELOG<<EOF'
+            echo "$COMMITS"
+            echo 'EOF'
+          } >> $GITHUB_OUTPUT
+
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
@@ -76,17 +97,11 @@ jobs:
             rokit add tekne-studio/roblox-audit@${{ steps.get_version.outputs.VERSION }}
             ```
 
-            ### What's New in v${{ steps.get_version.outputs.VERSION }}
+            ### What's New
 
-            #### 🎉 Major Release - Single Command Architecture
+            ${{ steps.changelog.outputs.CHANGELOG }}
 
-            - **✨ Unified Command**: All features now integrated into a single `roblox-audit` command
-            - **📦 Modular Design**: Scripts are now Lua modules that can be imported and reused
-            - **🔧 Improved Reliability**: No more missing command errors - everything works out of the box
-            - **⚡ Better Performance**: Direct function calls instead of spawning external processes
-            - **🛠️ Backwards Compatible**: analyze-dependencies and visualize-dependencies can still be run standalone
-
-            #### What's Included
+            ### Features
 
             Run `roblox-audit` to get:
             - 🔍 **Circular dependency detection**
@@ -97,7 +112,7 @@ jobs:
             - 📂 **Project structure analysis**
             - 📊 **Comprehensive reports**
 
-            ### Full Documentation
+            ### Documentation
 
             See [README.md](https://github.com/${{ github.repository }}/blob/main/README.md) for detailed usage instructions.
           files: |
