@@ -76,13 +76,30 @@ jobs:
             rokit add tekne-studio/roblox-audit@${{ steps.get_version.outputs.VERSION }}
             ```
 
-            ### What's included
+            ### What's New in v${{ steps.get_version.outputs.VERSION }}
 
-            - 🔍 **analyze-dependencies** - Detect circular dependencies
-            - 🎨 **visualize-dependencies** - Generate dependency graphs
-            - 🛡️ **roblox-audit** - Comprehensive code quality checks (auto-initializes configs)
+            #### 🎉 Major Release - Single Command Architecture
 
-            See [README.md](https://github.com/${{ github.repository }}/blob/main/README.md) for full documentation.
+            - **✨ Unified Command**: All features now integrated into a single `roblox-audit` command
+            - **📦 Modular Design**: Scripts are now Lua modules that can be imported and reused
+            - **🔧 Improved Reliability**: No more missing command errors - everything works out of the box
+            - **⚡ Better Performance**: Direct function calls instead of spawning external processes
+            - **🛠️ Backwards Compatible**: analyze-dependencies and visualize-dependencies can still be run standalone
+
+            #### What's Included
+
+            Run `roblox-audit` to get:
+            - 🔍 **Circular dependency detection**
+            - 🎨 **Dependency graph visualization** (SVG/PNG)
+            - 📝 **Type checking** (luau-lsp)
+            - 🔎 **Linting** (Selene)
+            - 🎨 **Style checking** (StyLua)
+            - 📂 **Project structure analysis**
+            - 📊 **Comprehensive reports**
+
+            ### Full Documentation
+
+            See [README.md](https://github.com/${{ github.repository }}/blob/main/README.md) for detailed usage instructions.
           files: |
             dist/*.tar.gz
             dist/*.zip

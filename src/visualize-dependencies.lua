@@ -426,14 +426,20 @@ local function visualize(srcDir, outputFile, format, detailedMode)
     return true
 end
 
--- Main execution
-local srcDir = arg[1] or "src"
-local outputFile = arg[2]
-local format = arg[3] or "svg"
-local detailedMode = arg[4] == "detailed" or arg[4] == "--detailed"
+-- Export module functions
+local M = {
+    visualize = visualize,
+}
 
-if arg[1] == "--help" or arg[1] == "-h" then
-    print([[
+-- Main execution (only if run as script, not when required)
+if not pcall(debug.getlocal, 4, 1) then
+    local srcDir = arg[1] or "src"
+    local outputFile = arg[2]
+    local format = arg[3] or "svg"
+    local detailedMode = arg[4] == "detailed" or arg[4] == "--detailed"
+
+    if arg[1] == "--help" or arg[1] == "-h" then
+        print([[
 Usage: ./visualize-dependencies [directory] [output] [format] [mode]
 
 Generates dependency graph visualizations for Roblox/Rojo projects.
@@ -480,14 +486,17 @@ Color coding (neon strokes):
   - Grey (#888888): Utilities
   - Pink dashed (#FF0055): Orphan modules (no connections)
 ]])
-    os.exit(0)
+        os.exit(0)
+    end
+
+    -- Run visualization
+    local success = visualize(srcDir, outputFile, format, detailedMode)
+
+    if success then
+        os.exit(0)
+    else
+        os.exit(1)
+    end
 end
 
--- Run visualization
-local success = visualize(srcDir, outputFile, format, detailedMode)
-
-if success then
-    os.exit(0)
-else
-    os.exit(1)
-end
+return M

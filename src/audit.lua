@@ -16,6 +16,14 @@ local PATH_SEP = IS_WINDOWS and "\\" or "/"
 -- Use standard lua runtime
 local LUA_CMD = "lua"
 
+-- Setup module path to find companion scripts in the same directory
+local scriptDir = arg[0]:match("(.*[/\\])") or "./"
+package.path = scriptDir .. "?.lua;" .. package.path
+
+-- Import companion modules (they will be in the same directory when installed)
+local analyzeDeps = require("analyze-dependencies")
+local visualizeDeps = require("visualize-dependencies")
+
 local function commandExists(cmd)
 	local handle = io.popen(cmd .. " --version 2>" .. NULL_DEVICE)
 	if not handle then
@@ -309,20 +317,33 @@ end
 -- 6. Circular Dependencies
 -- -------------------------------------------
 print("🔄 Checking circular dependencies...")
-if commandExists("analyze-dependencies") then
-	exec('analyze-dependencies "' .. SRC_DIR .. '"', "audit/audit-circular.txt")
+-- Redirect output to file
+local oldPrint = print
+local outputFile = io.open("audit/audit-circular.txt", "w")
+if outputFile then
+	print = function(...)
+		local args = {...}
+		for i, v in ipairs(args) do
+			outputFile:write(tostring(v))
+			if i < #args then outputFile:write("\t") end
+		end
+		outputFile:write("\n")
+	end
 
-	if grepExists("audit/audit-circular.txt", "No circular dependencies found") then
+	local success, cycles = analyzeDeps.analyzeDependencies(SRC_DIR)
+
+	outputFile:close()
+	print = oldPrint
+
+	if success then
 		print("   ✓ audit/audit-circular.txt (no cycles 🎉)")
-	elseif grepExists("audit/audit-circular.txt", "Circular Dependencies Detected") then
-		local cycleCount = grepCount("audit/audit-circular.txt", "^Cycle #")
-		print("   ⚠️  audit/audit-circular.txt (" .. cycleCount .. " circular dependencies found)")
+	elseif cycles and #cycles > 0 then
+		print("   ⚠️  audit/audit-circular.txt (" .. #cycles .. " circular dependencies found)")
 	else
 		print("   ⚠️  audit/audit-circular.txt (check results)")
 	end
 else
-	print("   ⏭️  Skipped (analyze-dependencies not found)")
-	print("      💡 Install via: rokit add tekne-studio/roblox-audit")
+	print("   ❌ Failed to write audit/audit-circular.txt")
 end
 
 -- -------------------------------------------
@@ -394,19 +415,14 @@ end
 -- -------------------------------------------
 print("🎨 Generating dependency graphs...")
 
-if commandExists("visualize-dependencies") and commandExists("dot") then
+if commandExists("dot") then
 	-- Generate SVG and PNG versions
-	os.execute('visualize-dependencies "' .. SRC_DIR .. '" "audit/audit-graph.svg" "svg" >' .. NULL_DEVICE .. ' 2>&1')
-	os.execute('visualize-dependencies "' .. SRC_DIR .. '" "audit/audit-graph.png" "png" >' .. NULL_DEVICE .. ' 2>&1')
+	local success1 = visualizeDeps.visualize(SRC_DIR, "audit/audit-graph.svg", "svg", false)
+	local success2 = visualizeDeps.visualize(SRC_DIR, "audit/audit-graph.png", "png", false)
 
-	local svgFile = io.open("audit/audit-graph.svg", "r")
-	if svgFile then
-		svgFile:close()
+	if success1 then
 		print("   ✓ audit/audit-graph.svg (grouped overview 🎉)")
-
-		local pngFile = io.open("audit/audit-graph.png", "r")
-		if pngFile then
-			pngFile:close()
+		if success2 then
 			print("   ✓ audit/audit-graph.png (PNG version)")
 		end
 
@@ -420,17 +436,12 @@ if commandExists("visualize-dependencies") and commandExists("dot") then
 	end
 
 	-- Generate detailed view
-	os.execute('visualize-dependencies "' .. SRC_DIR .. '" "audit/audit-graph-full.svg" "svg" "detailed" >' .. NULL_DEVICE .. ' 2>&1')
-	os.execute('visualize-dependencies "' .. SRC_DIR .. '" "audit/audit-graph-full.png" "png" "detailed" >' .. NULL_DEVICE .. ' 2>&1')
+	local success3 = visualizeDeps.visualize(SRC_DIR, "audit/audit-graph-full.svg", "svg", true)
+	local success4 = visualizeDeps.visualize(SRC_DIR, "audit/audit-graph-full.png", "png", true)
 
-	local fullSvgFile = io.open("audit/audit-graph-full.svg", "r")
-	if fullSvgFile then
-		fullSvgFile:close()
+	if success3 then
 		print("   ✓ audit/audit-graph-full.svg (detailed 🎉)")
-
-		local fullPngFile = io.open("audit/audit-graph-full.png", "r")
-		if fullPngFile then
-			fullPngFile:close()
+		if success4 then
 			print("   ✓ audit/audit-graph-full.png (PNG version)")
 		end
 
@@ -442,9 +453,6 @@ if commandExists("visualize-dependencies") and commandExists("dot") then
 	else
 		print("   ⚠️  Failed to generate detailed graph")
 	end
-elseif not commandExists("visualize-dependencies") then
-	print("   ⏭️  Skipped (visualize-dependencies not found)")
-	print("      💡 Install via: rokit add tekne-studio/roblox-audit")
 elseif not commandExists("dot") then
 	print("   ⏭️  Skipped (graphviz not installed)")
 	if IS_WINDOWS then
