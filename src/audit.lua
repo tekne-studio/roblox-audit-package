@@ -309,10 +309,8 @@ end
 -- 6. Circular Dependencies
 -- -------------------------------------------
 print("🔄 Checking circular dependencies...")
-local analyzerPath = IS_WINDOWS and ".\\analyze-dependencies.lua" or "./analyze-dependencies.lua"
-if io.open(analyzerPath, "r") then
-	io.close(io.open(analyzerPath, "r"))
-	exec(LUA_CMD .. ' "' .. analyzerPath .. '" "' .. SRC_DIR .. '"', "audit/audit-circular.txt")
+if commandExists("analyze-dependencies") then
+	exec('analyze-dependencies "' .. SRC_DIR .. '"', "audit/audit-circular.txt")
 
 	if grepExists("audit/audit-circular.txt", "No circular dependencies found") then
 		print("   ✓ audit/audit-circular.txt (no cycles 🎉)")
@@ -324,7 +322,7 @@ if io.open(analyzerPath, "r") then
 	end
 else
 	print("   ⏭️  Skipped (analyze-dependencies not found)")
-	print("      💡 Make sure analyze-dependencies is in the project root")
+	print("      💡 Install via: rokit add tekne-studio/roblox-audit")
 end
 
 -- -------------------------------------------
@@ -395,14 +393,11 @@ end
 -- 9. Dependency Graph Visualization
 -- -------------------------------------------
 print("🎨 Generating dependency graphs...")
-local visualizerPath = IS_WINDOWS and ".\\visualize-dependencies.lua" or "./visualize-dependencies.lua"
 
-if io.open(visualizerPath, "r") and commandExists("dot") then
-	io.close(io.open(visualizerPath, "r"))
-
+if commandExists("visualize-dependencies") and commandExists("dot") then
 	-- Generate SVG and PNG versions
-	os.execute(LUA_CMD .. ' "' .. visualizerPath .. '" "' .. SRC_DIR .. '" "audit/audit-graph.svg" "svg" >' .. NULL_DEVICE .. ' 2>&1')
-	os.execute(LUA_CMD .. ' "' .. visualizerPath .. '" "' .. SRC_DIR .. '" "audit/audit-graph.png" "png" >' .. NULL_DEVICE .. ' 2>&1')
+	os.execute('visualize-dependencies "' .. SRC_DIR .. '" "audit/audit-graph.svg" "svg" >' .. NULL_DEVICE .. ' 2>&1')
+	os.execute('visualize-dependencies "' .. SRC_DIR .. '" "audit/audit-graph.png" "png" >' .. NULL_DEVICE .. ' 2>&1')
 
 	local svgFile = io.open("audit/audit-graph.svg", "r")
 	if svgFile then
@@ -425,8 +420,8 @@ if io.open(visualizerPath, "r") and commandExists("dot") then
 	end
 
 	-- Generate detailed view
-	os.execute(LUA_CMD .. ' "' .. visualizerPath .. '" "' .. SRC_DIR .. '" "audit/audit-graph-full.svg" "svg" "detailed" >' .. NULL_DEVICE .. ' 2>&1')
-	os.execute(LUA_CMD .. ' "' .. visualizerPath .. '" "' .. SRC_DIR .. '" "audit/audit-graph-full.png" "png" "detailed" >' .. NULL_DEVICE .. ' 2>&1')
+	os.execute('visualize-dependencies "' .. SRC_DIR .. '" "audit/audit-graph-full.svg" "svg" "detailed" >' .. NULL_DEVICE .. ' 2>&1')
+	os.execute('visualize-dependencies "' .. SRC_DIR .. '" "audit/audit-graph-full.png" "png" "detailed" >' .. NULL_DEVICE .. ' 2>&1')
 
 	local fullSvgFile = io.open("audit/audit-graph-full.svg", "r")
 	if fullSvgFile then
@@ -447,8 +442,9 @@ if io.open(visualizerPath, "r") and commandExists("dot") then
 	else
 		print("   ⚠️  Failed to generate detailed graph")
 	end
-elseif not io.open(visualizerPath, "r") then
+elseif not commandExists("visualize-dependencies") then
 	print("   ⏭️  Skipped (visualize-dependencies not found)")
+	print("      💡 Install via: rokit add tekne-studio/roblox-audit")
 elseif not commandExists("dot") then
 	print("   ⏭️  Skipped (graphviz not installed)")
 	if IS_WINDOWS then
