@@ -1,167 +1,117 @@
 # 🔍 Roblox Audit Tools
 
-A collection of Lua-based audit and dependency analysis tools for Roblox/Rojo projects.
+Comprehensive audit and dependency analysis toolkit for Roblox/Rojo projects.
 
 ## Features
 
-- **🔍 analyze-dependencies** - Detect circular dependencies in your Luau code
-- **🎨 visualize-dependencies** - Generate beautiful SVG dependency graphs with Tekne-style aesthetics
-- **🛡️ roblox-audit** - Run comprehensive code quality checks (auto-initializes configs on first run)
+- 🔍 **Circular Dependency Detection** - Detect dependency cycles automatically
+- 🎨 **Dependency Graphs** - Beautiful SVG visualizations with Tekne aesthetics
+- 📝 **Type Checking** - Static analysis with luau-lsp
+- 🔎 **Linting** - Code quality checks with Selene
+- 🎨 **Style Checking** - Formatting validation with StyLua
+- 🤖 **Auto-Setup** - Installs dependencies and creates configs on first run
 
 ## Installation
 
-### Via Rokit/Aftman
-
 ```bash
+# Initialize Rokit in your project (if needed)
+rokit init
+
+# Add roblox-audit
 rokit add tekne-studio/roblox-audit
 ```
 
-Or add to your `rokit.toml`:
+Or add to `rokit.toml`:
 
 ```toml
 [tools]
-roblox-audit = "tekne-studio/roblox-audit@1.0.0"
+roblox-audit = "tekne-studio/roblox-audit"
 ```
-
-### Manual Installation
-
-1. Clone this repository
-2. Add the `src/` directory to your PATH
-3. Ensure scripts are executable: `chmod +x src/*`
 
 ## Usage
 
-### 📊 Analyze Dependencies
-
-Detect circular dependencies in your Roblox/Rojo project:
-
-```bash
-analyze-dependencies [directory]
-```
-
-**Examples:**
-```bash
-analyze-dependencies src
-analyze-dependencies src/shared/Modules
-```
-
-**Output:**
-- Lists all Lua files found
-- Detects and reports circular dependencies
-- Shows file paths involved in cycles
-- Filters out self-references automatically
-
-### 🎨 Visualize Dependencies
-
-Generate beautiful dependency graphs with high-tech neon aesthetics:
-
-```bash
-visualize-dependencies [directory] [output] [format] [mode]
-```
-
-**Arguments:**
-- `directory` - Source directory (default: `src`)
-- `output` - Output filename (default: `dependency-graph.<format>`)
-- `format` - `svg`, `png`, `pdf`, or `dot` (default: `svg`)
-- `mode` - `detailed` for full paths and edge labels
-
-**Examples:**
-```bash
-visualize-dependencies src
-visualize-dependencies src graph.svg
-visualize-dependencies src graph.png png
-visualize-dependencies src detailed.svg svg detailed
-```
-
-**Features:**
-- Deep black background (#0A0A0A)
-- Neon-colored category borders (cyan, purple, green, orange)
-- JetBrains Mono font throughout
-- Grouped by module type (Services, Controllers, Framework, etc.)
-- Orthogonal edges for clean layouts
-- Highlights orphan modules (no connections)
-
-**Requires:** Graphviz (`brew install graphviz`)
-
-### 🛡️ Audit Code
-
-Run comprehensive code quality checks:
+Run the audit in your project directory:
 
 ```bash
 roblox-audit
 ```
 
-**What it does:**
-- 📝 **Auto-initializes configs** - Creates `selene.toml` and `stylua.toml` if they don't exist
-- 🔍 **Type checking** - Runs luau-lsp analyze
-- 🔎 **Linting** - Runs Selene for code quality
-- 🎨 **Style checking** - Runs StyLua for formatting
-- 🔄 **Circular dependencies** - Detects dependency cycles
-- 🎨 **Dependency graphs** - Generates SVG/PNG visualizations
-- 📂 **Project structure** - Checks for common issues
-- 📊 **Summary report** - Shows all findings in one place
+On first run, the tool automatically:
+- Installs required dependencies (luau-lsp, Selene, StyLua) via Rokit
+- Creates `selene.toml` and `stylua.toml` with sensible defaults
 
-**Generated reports:**
+### Generated Reports
+
 All reports are saved to the `audit/` directory:
 - `audit-check.txt` - Type errors
 - `audit-selene.txt` - Linting warnings
 - `audit-style.txt` - Formatting issues
 - `audit-circular.txt` - Circular dependencies
 - `audit-graph.svg` - Dependency visualization
-- `audit-tree.txt` - File structure
-
-**First run:**
-On the first run, `roblox-audit` will automatically create:
-- `selene.toml` with Roblox-specific rules
-- `stylua.toml` with formatting preferences
-
-You can customize these files after they're created.
+- `audit-tree.txt` - Project structure
 
 ## Requirements
 
-- **Lua 5.1+** or **LuaJIT** (for running scripts)
-- **Selene** (for linting) - `rokit install Kampfkarren/selene`
-- **StyLua** (for formatting) - `rokit install JohnnyMorganz/StyLua`
-- **Graphviz** (for visualization) - `brew install graphviz`
+**Auto-installed via Rokit:**
+- luau-lsp, Selene, StyLua
 
-## Theme & Styling
+**Manual installation:**
+- Lua 5.1+ or LuaJIT
+- Graphviz (for visualization): `brew install graphviz`
 
-The visualization tool uses a **Tekne-inspired high-tech aesthetic**:
+## Development
 
-| Element | Style |
-|---------|-------|
-| Background | Deep black (#0A0A0A) |
-| Framework | Cyan border (#00D9FF) |
-| Bootstrap | Purple border (#CC00FF) |
-| Services | Green border (#00FF88) |
-| Controllers | Orange border (#FF8800) |
-| Utilities | Grey border (#888888) |
-| Orphans | Pink dashed border (#FF0055) |
+### Making Changes
 
-## Module Detection
+1. Edit files in `src/`
+2. Update version in `rokit.toml`
+3. Build: `./build.sh`
+4. Test: `./dist/audit-bundled.lua`
+5. Commit with conventional commits: `git commit -m "feat: description"`
+6. Push: `git push`
 
-Scripts automatically detect module types:
+### Releases
 
-- **Framework**: Modules in `/Framework/` directory
-- **Bootstrap**: `init.lua`, `init.server.lua`, `init.client.lua`
-- **Services**: Modules ending in `Service`
-- **Controllers**: Modules ending in `Controller`
-- **Utilities**: Everything else
+**DO NOT create tags manually.** The CI/CD system automatically:
+- Detects version changes in `rokit.toml`
+- Creates tags and releases
+- Generates changelogs from commits
+- Publishes to GitHub and Rokit
+
+### Commit Conventions
+
+Use [Conventional Commits](https://www.conventionalcommits.org/):
+- `feat:` - New feature
+- `fix:` - Bug fix
+- `perf:` - Performance improvement
+- `docs:` - Documentation
+- `refactor:` - Code refactoring
+- `chore:` - Maintenance
+
+## Project Structure
+
+```
+src/
+├── audit.lua                    # Main orchestrator
+├── analyze-dependencies.lua     # Dependency detection
+└── visualize-dependencies.lua   # Graph generation
+dist/
+└── audit-bundled.lua           # Single-file build (generated)
+```
 
 ## Contributing
 
-Contributions welcome! Please:
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Submit a pull request
+1. Fork and create a feature branch
+2. Make changes with conventional commits
+3. Update version in `rokit.toml`
+4. Run `./build.sh` and test
+5. Submit pull request
 
 ## License
 
-MIT License - See [LICENSE](LICENSE) file for details
+MIT
 
-## Related Projects
+## Related
 
 - [Rojo](https://rojo.space/) - Roblox project management
 - [Selene](https://github.com/Kampfkarren/selene) - Lua linter
