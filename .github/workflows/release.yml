@@ -25,17 +25,24 @@ jobs:
         with:
           fetch-depth: 0  # Fetch all tags
 
+      - name: Install darklua
+        run: |
+          curl -L https://github.com/seaofvoices/darklua/releases/latest/download/darklua-linux-x86_64.zip -o darklua.zip
+          unzip darklua.zip
+          chmod +x darklua
+          sudo mv darklua /usr/local/bin/
+
+      - name: Bundle scripts with darklua
+        run: |
+          # Bundle audit.lua with its dependencies
+          darklua process --config .darklua.json5 src/audit.lua dist/audit-bundled.lua
+
       - name: Create release archives
         run: |
-          mkdir -p dist
-
-          # Since these are pure Lua scripts, they're platform-independent
-          # Create platform-specific packages (Rokit requirement)
-
-          # Package structure - put all scripts at root level for Rokit
+          # Package structure - use bundled script
           mkdir -p roblox-audit
           cp rokit.toml roblox-audit/
-          cp src/*.lua roblox-audit/
+          cp dist/audit-bundled.lua roblox-audit/audit.lua
 
           # Create platform-specific archives (Rokit expects these naming conventions)
           # macOS (both Intel and ARM)

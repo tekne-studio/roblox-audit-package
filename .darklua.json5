@@ -1,0 +1,12 @@
+{
+  generator: "retain-lines",
+  rules: [
+    {
+      rule: "bundle",
+      modules_identifier: "__BUNDLER_MODULES",
+      require_mode: {
+        name: "path"
+      }
+    }
+  ]
+}
