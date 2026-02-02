@@ -1,5 +1,3 @@
-#!/usr/bin/env lua
-
 --[[
 ===========================================
 🔍 Roblox/Rojo Luau Project Audit (v2.0)
@@ -19,8 +17,8 @@ local LUA_CMD = "lua"
 -- Import companion modules
 -- When bundled with darklua, these will be embedded in this file
 -- When run unbundled, they need to be in the same directory
-local analyzeDeps = require("analyze-dependencies")
-local visualizeDeps = require("visualize-dependencies")
+local analyzeDeps = require("./analyze-dependencies")
+local visualizeDeps = require("./visualize-dependencies")
 
 local function commandExists(cmd)
 	local handle = io.popen(cmd .. " --version 2>" .. NULL_DEVICE)

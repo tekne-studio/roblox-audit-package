@@ -1,12 +1,12 @@
 {
-  generator: "retain-lines",
-  rules: [
-    {
-      rule: "bundle",
-      modules_identifier: "__BUNDLER_MODULES",
-      require_mode: {
-        name: "path"
-      }
+  generator: "retain_lines",
+  bundle: {
+    modules_identifier: "__DARKLUA_BUNDLE_MODULES",
+    require_mode: {
+      name: "path"
     }
+  },
+  rules: [
+    "remove_types"
   ]
 }

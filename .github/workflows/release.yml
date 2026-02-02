@@ -34,8 +34,14 @@ jobs:
 
       - name: Bundle scripts with darklua
         run: |
+          # Create dist directory
+          mkdir -p dist
           # Bundle audit.lua with its dependencies
-          darklua process --config .darklua.json5 src/audit.lua dist/audit-bundled.lua
+          darklua process --config .darklua.json5 src/audit.lua dist/audit-bundled-temp.lua
+          # Add shebang to bundled output
+          echo '#!/usr/bin/env lua' > dist/audit-bundled.lua
+          cat dist/audit-bundled-temp.lua >> dist/audit-bundled.lua
+          chmod +x dist/audit-bundled.lua
 
       - name: Create release archives
         run: |

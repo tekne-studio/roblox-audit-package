@@ -2,6 +2,8 @@
 dist/
 *.tar.gz
 *.zip
+darklua
+darklua.zip
 
 # Test outputs
 dependency-graph.*
@@ -24,3 +26,6 @@ Thumbs.db
 # Temp files
 tmp/
 temp/
+audit/
+selene.toml
+stylua.toml
