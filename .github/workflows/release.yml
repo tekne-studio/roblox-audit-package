@@ -5,11 +5,17 @@ on:
     tags:
       - 'v*.*.*'
   workflow_dispatch:
+  workflow_run:
+    workflows: ["Auto Release"]
+    types:
+      - completed
 
 jobs:
   release:
     name: Create Release
     runs-on: ubuntu-latest
+    # Only run if triggered by tag push, manual dispatch, or successful auto-release
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     permissions:
       contents: write  # Required for creating releases
 
@@ -33,9 +39,18 @@ jobs:
           tar -czf dist/roblox-audit.tar.gz roblox-audit
           zip -r dist/roblox-audit.zip roblox-audit
 
-      - name: Extract version from tag
+      - name: Extract version
         id: get_version
-        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+        run: |
+          # Try to get version from tag first (manual or tag push trigger)
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+            VERSION="${GITHUB_REF#refs/tags/v}"
+          else
+            # Get version from rokit.toml (workflow_run trigger)
+            VERSION=$(grep '^version = ' rokit.toml | cut -d'"' -f2)
+          fi
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+          echo "Detected version: $VERSION"
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
