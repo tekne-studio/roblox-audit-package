@@ -82,10 +82,11 @@ jobs:
           PREVIOUS_TAG=$(git tag --sort=-v:refname | grep -v "v$VERSION" | head -1 || echo "")
 
           if [ -z "$PREVIOUS_TAG" ]; then
-            echo "No previous tag found, using all commits"
+            echo "No previous tag found, generating full changelog"
             COMMITS=$(git log --pretty=format:"- %s" --no-merges)
           else
             echo "Generating changelog from $PREVIOUS_TAG to v$VERSION"
+            # Get all commits since last tag (dynamic - all commits for this version)
             COMMITS=$(git log ${PREVIOUS_TAG}..HEAD --pretty=format:"- %s" --no-merges)
           fi
 
