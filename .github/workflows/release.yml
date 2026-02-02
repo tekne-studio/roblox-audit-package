@@ -32,10 +32,10 @@ jobs:
           # Since these are pure Lua scripts, they're platform-independent
           # Create platform-specific packages (Rokit requirement)
 
-          # Package structure
+          # Package structure - put all scripts at root level for Rokit
           mkdir -p roblox-audit
           cp rokit.toml roblox-audit/
-          cp -r src roblox-audit/
+          cp src/*.lua roblox-audit/
 
           # Create platform-specific archives (Rokit expects these naming conventions)
           # macOS (both Intel and ARM)
