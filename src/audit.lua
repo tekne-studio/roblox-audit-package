@@ -160,6 +160,10 @@ local function ensureConfigsExist()
 # Use Roblox standard library (enables 'game', 'workspace', 'task', etc.)
 std = "roblox"
 
+# Pin stdlib to avoid automatic updates (improves performance)
+# Generates roblox.yml locally instead of downloading every 6 hours
+roblox-std-source = "pinned"
+
 [config]
 # Enable Luau syntax support (continue, compound assignments, etc.)
 luau = true

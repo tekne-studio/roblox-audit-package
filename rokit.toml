@@ -3,7 +3,7 @@
 
 [package]
 name = "roblox-audit"
-version = "0.0.14"
+version = "0.0.15"
 description = "Audit and dependency analysis tools for Roblox/Rojo projects"
 license = "MIT"
 authors = ["Marlus Saraiva"]
