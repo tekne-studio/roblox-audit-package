@@ -1,0 +1,29 @@
+# Roblox Audit Tools
+# A collection of Lua-based audit and dependency analysis tools for Roblox/Rojo projects
+
+[package]
+name = "roblox-audit"
+version = "1.0.0"
+description = "Audit and dependency analysis tools for Roblox/Rojo projects"
+license = "MIT"
+authors = ["Marlus Saraiva"]
+repository = "https://github.com/tekne-studio/roblox-audit"
+
+# Define the executables provided by this package
+[[bin]]
+name = "audit"
+path = "src/audit.lua"
+
+[[bin]]
+name = "analyze-dependencies"
+path = "src/analyze-dependencies.lua"
+
+[[bin]]
+name = "visualize-dependencies"
+path = "src/visualize-dependencies.lua"
+
+# Dependencies - tools this package needs to function
+[tools]
+luau-lsp = "JohnnyMorganz/luau-lsp@1.61.0"
+stylua = "JohnnyMorganz/StyLua@2.0.1"
+selene = "Kampfkarren/selene@0.27.1"

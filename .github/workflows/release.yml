@@ -1,0 +1,64 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+
+jobs:
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create release archives
+        run: |
+          mkdir -p dist
+
+          # Since these are pure Lua scripts, they're platform-independent
+          # Create a single universal package with rokit.toml manifest
+
+          # Universal package (works on all platforms)
+          mkdir -p roblox-audit
+          cp rokit.toml roblox-audit/
+          cp -r src roblox-audit/
+
+          # Create compressed archives
+          tar -czf dist/roblox-audit.tar.gz roblox-audit
+          zip -r dist/roblox-audit.zip roblox-audit
+
+      - name: Extract version from tag
+        id: get_version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: Release v${{ steps.get_version.outputs.VERSION }}
+          body: |
+            ## Roblox Audit Tools v${{ steps.get_version.outputs.VERSION }}
+
+            ### Installation
+
+            ```bash
+            rokit add tekne-studio/roblox-audit@${{ steps.get_version.outputs.VERSION }}
+            ```
+
+            ### What's included
+
+            - 🔍 **analyze-dependencies** - Detect circular dependencies
+            - 🎨 **visualize-dependencies** - Generate dependency graphs
+            - 🛡️ **audit** - Comprehensive code quality checks (auto-initializes configs)
+
+            See [README.md](https://github.com/${{ github.repository }}/blob/main/README.md) for full documentation.
+          files: |
+            dist/*.tar.gz
+            dist/*.zip
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

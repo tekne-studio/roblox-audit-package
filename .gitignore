@@ -1,0 +1,26 @@
+# Build artifacts
+dist/
+*.tar.gz
+*.zip
+
+# Test outputs
+dependency-graph.*
+*.dot
+*.svg
+*.png
+*.pdf
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Temp files
+tmp/
+temp/
