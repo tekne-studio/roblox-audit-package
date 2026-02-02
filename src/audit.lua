@@ -107,6 +107,45 @@ local function writeFile(path, content)
 end
 
 -- -------------------------------------------
+-- Auto-Install Rokit Dependencies
+-- -------------------------------------------
+local function ensureRokitTools()
+	-- Check if rokit is available
+	if not commandExists("rokit") then
+		print("⚠️  Rokit not found - skipping auto-install of audit tools")
+		print("   💡 Install Rokit: https://github.com/rojo-rbx/rokit")
+		print("")
+		return false
+	end
+
+	-- Initialize rokit if rokit.toml doesn't exist
+	if not fileExists("rokit.toml") then
+		print("🔧 Initializing Rokit project...")
+		os.execute("rokit init >" .. NULL_DEVICE .. " 2>&1")
+	end
+
+	print("🔧 Ensuring audit tools are installed...")
+
+	local tools = {
+		{ name = "luau-lsp", spec = "JohnnyMorganz/luau-lsp@1.61.0" },
+		{ name = "selene", spec = "Kampfkarren/selene@0.27.1" },
+		{ name = "stylua", spec = "JohnnyMorganz/StyLua@2.0.1" },
+	}
+
+	-- Add all tools (rokit add is idempotent - safe to run multiple times)
+	for _, tool in ipairs(tools) do
+		os.execute("rokit add " .. tool.spec .. " >" .. NULL_DEVICE .. " 2>&1")
+	end
+
+	-- Install all tools
+	os.execute("rokit install >" .. NULL_DEVICE .. " 2>&1")
+	print("   ✓ Audit tools ready")
+	print("")
+
+	return true
+end
+
+-- -------------------------------------------
 -- Auto-Initialize Configuration Files
 -- -------------------------------------------
 local function ensureConfigsExist()
@@ -158,8 +197,9 @@ enabled = false
 	end
 end
 
--- Initialize configs before running audit
+-- Initialize configs and tools before running audit
 ensureConfigsExist()
+ensureRokitTools()
 
 print("📍 Project: Roblox/Rojo (Luau)")
 
