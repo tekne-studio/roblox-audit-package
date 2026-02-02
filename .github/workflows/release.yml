@@ -80,7 +80,7 @@ jobs:
 
             - 🔍 **analyze-dependencies** - Detect circular dependencies
             - 🎨 **visualize-dependencies** - Generate dependency graphs
-            - 🛡️ **audit** - Comprehensive code quality checks (auto-initializes configs)
+            - 🛡️ **roblox-audit** - Comprehensive code quality checks (auto-initializes configs)
 
             See [README.md](https://github.com/${{ github.repository }}/blob/main/README.md) for full documentation.
           files: |

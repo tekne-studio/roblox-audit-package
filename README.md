@@ -6,7 +6,7 @@ A collection of Lua-based audit and dependency analysis tools for Roblox/Rojo pr
 
 - **🔍 analyze-dependencies** - Detect circular dependencies in your Luau code
 - **🎨 visualize-dependencies** - Generate beautiful SVG dependency graphs with Tekne-style aesthetics
-- **🛡️ audit** - Run comprehensive code quality checks (auto-initializes configs on first run)
+- **🛡️ roblox-audit** - Run comprehensive code quality checks (auto-initializes configs on first run)
 
 ## Installation
 
@@ -88,7 +88,7 @@ visualize-dependencies src detailed.svg svg detailed
 Run comprehensive code quality checks:
 
 ```bash
-audit
+roblox-audit
 ```
 
 **What it does:**
@@ -111,7 +111,7 @@ All reports are saved to the `audit/` directory:
 - `audit-tree.txt` - File structure
 
 **First run:**
-On the first run, `audit` will automatically create:
+On the first run, `roblox-audit` will automatically create:
 - `selene.toml` with Roblox-specific rules
 - `stylua.toml` with formatting preferences
 
