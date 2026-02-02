@@ -128,7 +128,7 @@ local function ensureRokitTools()
 
 	local tools = {
 		{ name = "luau-lsp", spec = "JohnnyMorganz/luau-lsp@1.61.0" },
-		{ name = "selene", spec = "Kampfkarren/selene@0.27.1" },
+		{ name = "selene", spec = "Kampfkarren/selene@0.30.0" },
 		{ name = "stylua", spec = "JohnnyMorganz/StyLua@2.0.1" },
 	}
 

@@ -3,7 +3,7 @@
 
 [package]
 name = "roblox-audit"
-version = "0.0.13"
+version = "0.0.14"
 description = "Audit and dependency analysis tools for Roblox/Rojo projects"
 license = "MIT"
 authors = ["Marlus Saraiva"]
@@ -18,4 +18,4 @@ path = "audit.lua"
 [tools]
 luau-lsp = "JohnnyMorganz/luau-lsp@1.61.0"
 stylua = "JohnnyMorganz/StyLua@2.0.1"
-selene = "Kampfkarren/selene@0.27.1"
+selene = "Kampfkarren/selene@0.30.0"
