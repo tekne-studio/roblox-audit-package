@@ -30,16 +30,24 @@ jobs:
           mkdir -p dist
 
           # Since these are pure Lua scripts, they're platform-independent
-          # Create a single universal package with rokit.toml manifest
+          # Create platform-specific packages (Rokit requirement)
 
-          # Universal package (works on all platforms)
+          # Package structure
           mkdir -p roblox-audit
           cp rokit.toml roblox-audit/
           cp -r src roblox-audit/
 
-          # Create compressed archives
-          tar -czf dist/roblox-audit.tar.gz roblox-audit
-          zip -r dist/roblox-audit.zip roblox-audit
+          # Create platform-specific archives (Rokit expects these naming conventions)
+          # macOS (both Intel and ARM)
+          tar -czf dist/roblox-audit-macos-x86_64.tar.gz roblox-audit
+          tar -czf dist/roblox-audit-macos-aarch64.tar.gz roblox-audit
+
+          # Linux
+          tar -czf dist/roblox-audit-linux-x86_64.tar.gz roblox-audit
+          tar -czf dist/roblox-audit-linux-aarch64.tar.gz roblox-audit
+
+          # Windows
+          zip -r dist/roblox-audit-windows-x86_64.zip roblox-audit
 
       - name: Extract version
         id: get_version
