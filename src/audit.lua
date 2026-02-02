@@ -297,36 +297,7 @@ else
 end
 
 -- -------------------------------------------
--- 4. Selene Linting
--- -------------------------------------------
-print("🔎 Running Selene...")
-if commandExists("selene") then
-	exec('selene "' .. SRC_DIR .. '/"', "audit/audit-selene.txt")
-
-	if grepExists("audit/audit-selene.txt", "Could not collect standard library") then
-		print("   ❌ audit/audit-selene.txt (Selene stdlib error)")
-		print("      ⚠️  Selene 0.27.1 has a bug with Roblox stdlib")
-	elseif grepExists("audit/audit-selene.txt", "^Results:") then
-		local warnings = grepCount("audit/audit-selene.txt", "warning")
-		local errors = grepCount("audit/audit-selene.txt", "error")
-
-		if errors > 0 then
-			print(string.format("   ⚠️  audit/audit-selene.txt (%d errors, %d warnings)", errors, warnings))
-		elseif warnings > 0 then
-			print(string.format("   ⚠️  audit/audit-selene.txt (%d warnings)", warnings))
-		else
-			print("   ✓ audit/audit-selene.txt (no issues 🎉)")
-		end
-	else
-		print("   ✓ audit/audit-selene.txt (no issues 🎉)")
-	end
-else
-	print("   ⏭️  Skipped (selene not installed)")
-	print("      💡 rokit install")
-end
-
--- -------------------------------------------
--- 5. Style Check (StyLua)
+-- 4. Style Check (StyLua)
 -- -------------------------------------------
 print("🎨 Checking code style...")
 if commandExists("stylua") then
@@ -354,7 +325,7 @@ else
 end
 
 -- -------------------------------------------
--- 6. Circular Dependencies
+-- 5. Circular Dependencies
 -- -------------------------------------------
 print("🔄 Checking circular dependencies...")
 -- Redirect output to file
@@ -387,7 +358,7 @@ else
 end
 
 -- -------------------------------------------
--- 7. Project Structure Check
+-- 6. Project Structure Check
 -- -------------------------------------------
 print("📂 Checking project structure...")
 if dirExists("sync") then
@@ -440,7 +411,7 @@ else
 end
 
 -- -------------------------------------------
--- 8. File Extensions Analysis
+-- 7. File Extensions Analysis
 -- -------------------------------------------
 print("🔤 Analyzing file extensions...")
 local luaCount = findFiles(SRC_DIR, "*.lua")
@@ -451,7 +422,7 @@ if luaCount > 0 then
 end
 
 -- -------------------------------------------
--- 9. Dependency Graph Visualization
+-- 8. Dependency Graph Visualization
 -- -------------------------------------------
 print("🎨 Generating dependency graphs...")
 
@@ -502,6 +473,35 @@ elseif not commandExists("dot") then
 	end
 else
 	print("   ⏭️  Skipped")
+end
+
+-- -------------------------------------------
+-- 9. Selene Linting (runs last due to potential slowness)
+-- -------------------------------------------
+print("🔎 Running Selene...")
+if commandExists("selene") then
+	exec('selene "' .. SRC_DIR .. '/"', "audit/audit-selene.txt")
+
+	if grepExists("audit/audit-selene.txt", "Could not collect standard library") then
+		print("   ❌ audit/audit-selene.txt (Selene stdlib error)")
+		print("      ⚠️  Selene 0.27.1 has a bug with Roblox stdlib")
+	elseif grepExists("audit/audit-selene.txt", "^Results:") then
+		local warnings = grepCount("audit/audit-selene.txt", "warning")
+		local errors = grepCount("audit/audit-selene.txt", "error")
+
+		if errors > 0 then
+			print(string.format("   ⚠️  audit/audit-selene.txt (%d errors, %d warnings)", errors, warnings))
+		elseif warnings > 0 then
+			print(string.format("   ⚠️  audit/audit-selene.txt (%d warnings)", warnings))
+		else
+			print("   ✓ audit/audit-selene.txt (no issues 🎉)")
+		end
+	else
+		print("   ✓ audit/audit-selene.txt (no issues 🎉)")
+	end
+else
+	print("   ⏭️  Skipped (selene not installed)")
+	print("      💡 rokit install")
 end
 
 -- -------------------------------------------
